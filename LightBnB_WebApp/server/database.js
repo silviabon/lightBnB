@@ -1,15 +1,4 @@
-const { postgres_passw } = require('./secrets');
-const { Pool } = require('pg');
-
-const pool = new Pool({
-  user: 'postgres',
-  password: postgres_passw,
-  host: 'localhost',
-  database: 'lightbnb',
-});
-
-const properties = require('./json/properties.json');
-const users = require('./json/users.json');
+const db = require('./db');
 
 // / Users
 
@@ -25,7 +14,7 @@ const getUserWithEmail = function (email) {
       FROM users
       WHERE email = $1;
       `;
-  return pool.query(queryString, values)
+  return db.query(queryString, values)
     .then(res => res.rows[0])
     .catch(err => err.stack);
 };
@@ -43,7 +32,7 @@ const getUserWithId = function (id) {
       FROM users
       WHERE id = $1;
       `;
-  return pool.query(queryString, values)
+  return db.query(queryString, values)
     .then(res => res.rows[0])
     .catch(err => err.stack);
 };
@@ -61,7 +50,7 @@ const addUser = function (user) {
     VALUES ($1, $2, $3)
     RETURNING *;
       `;
-  return pool.query(queryString, values)
+  return db.query(queryString, values)
     .then(res => res.rows[0])
     .catch(err => err.stack);
 };
@@ -87,7 +76,7 @@ const getAllReservations = function (guest_id, limit = 10) {
     ORDER BY reservations.start_date
     LIMIT $2;
       `;
-  return pool.query(queryString, values)
+  return db.query(queryString, values)
     .then(res => res.rows)
     .catch(err => err.stack);
 };
@@ -159,7 +148,7 @@ const getAllProperties = function (options, limit = 10) {
   queryString += `ORDER BY cost_per_night
   LIMIT $${queryParams.length};
   `;
-  return pool.query(queryString, queryParams)
+  return db.query(queryString, queryParams)
     .then(res => res.rows)
     .catch(err => err.stack);
 };
@@ -180,7 +169,7 @@ const addProperty = function (property) {
     parking_spaces, number_of_bathrooms, number_of_bedrooms) 
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
     RETURNING * ;`;
-  return pool.query(queryString, values)
+  return db.query(queryString, values)
     .then(res => res.rows[0])
     .catch(err => err.stack);
 };
